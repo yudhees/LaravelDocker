@@ -14,6 +14,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN groupadd -g 10014 choreo && \
     useradd --no-create-home --uid 10014 --gid 10014 --system choreouser && \
+    chmod -R 755 /home/choreouser/.npm && \
     chown -R choreouser:choreo /home/choreouser
 
 # Set Apache ServerName to avoid warnings
@@ -35,7 +36,8 @@ RUN composer install --no-dev
 # Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
-# USER root
+
+USER 10014
 # Expose Apache port
 EXPOSE 80
 
