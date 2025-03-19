@@ -1,26 +1,40 @@
-FROM php:8.2
+# Use PHP with Apache
+FROM php:8.2-apache
 
+# Install required system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip
+    libzip-dev zip unzip curl git libpng-dev pkg-config libssl-dev \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
-# Clear cache
+# Clear APT cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install MongoDB PHP extension
-RUN pecl install mongodb \
-&& docker-php-ext-enable mongodb
 
-# Set working directory to Apache's root
-WORKDIR /var/www/app
+# Set Apache ServerName to avoid warnings
+RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
+    && a2enconf servername
+
+# Enable Apache mod_rewrite for Laravel routes
+RUN a2enmod rewrite
+
+# Set working directory
+WORKDIR /var/www/html/laravel
 
 # Copy Laravel project
-COPY . /var/www/app
+COPY . .
 
-# Install dependencies without dev packages
+# Install Laravel dependencies
 RUN composer install --no-dev 
 
 # Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+USER root
+# Expose Apache port
+EXPOSE 80
 
+# Start Apache
+CMD ["apache2-foreground"]
