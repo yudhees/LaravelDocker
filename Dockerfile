@@ -3,7 +3,7 @@ FROM php:8.2-fpm
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip curl git libpng-dev pkg-config libssl-dev \
+    libzip-dev zip unzip curl git libpng-dev pkg-config libssl-dev nginx supervisor \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
@@ -22,7 +22,7 @@ RUN groupadd -g 10014 choreo && \
 # RUN a2enmod rewrite
 
 # Set working directory
-WORKDIR /var/www/html/laravel
+WORKDIR  /var/www/app/laravel
 
 # Copy Laravel project
 COPY . .
@@ -30,14 +30,24 @@ COPY . .
 # Install Laravel dependencies
 RUN composer install --no-dev 
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+RUN mkdir -p /var/www/app/laravel/storage \
+    /var/www/app/laravel/bootstrap/cache \
+    /var/log/supervisor \
+    && chown -R www-data:www-data /var/www/app/laravel/storage \
+    /var/www/app/laravel/bootstrap/cache \
+    /var/log/supervisor \
+    && chmod -R 775 /var/www/app/laravel/storage \
+    /var/www/app/laravel/bootstrap/cache \
+    /var/log/supervisor
 
-USER 10014
+# Ensure Supervisor log file is writable
+RUN touch /var/log/supervisor/supervisord.log && \
+    chown www-data:www-data /var/log/supervisor/supervisord.log
+    
 COPY nginx.conf /etc/nginx/sites-available/default
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Expose Apache port
+USER root
 EXPOSE 80
 
 # Start Apache
