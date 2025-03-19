@@ -1,5 +1,5 @@
 # Use PHP with Apache
-FROM php:8.2-apache
+FROM php:8.2
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,7 +19,7 @@ RUN groupadd -g 10014 choreo && \
     # && a2enconf servername
 
 # Enable Apache mod_rewrite for Laravel routes
-RUN a2enmod rewrite
+# RUN a2enmod rewrite
 
 # Set working directory
 WORKDIR /var/www/html/laravel
@@ -39,4 +39,4 @@ USER 10014
 EXPOSE 80
 
 # Start Apache
-CMD ["apache2-foreground"]
+# CMD ["apache2-foreground"]
