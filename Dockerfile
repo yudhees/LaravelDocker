@@ -14,12 +14,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN groupadd -g 10014 choreo && \
     useradd --no-create-home --uid 10014 --gid 10014 --system choreouser && \
-    chmod -R 755 /home/choreouser/.npm && \
     chown -R choreouser:choreo /home/choreouser
 
 # Set Apache ServerName to avoid warnings
-RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
-    && a2enconf servername
+# RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
+    # && a2enconf servername
 
 # Enable Apache mod_rewrite for Laravel routes
 RUN a2enmod rewrite
