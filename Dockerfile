@@ -47,7 +47,7 @@ RUN touch /var/log/supervisor/supervisord.log && \
 COPY nginx.conf /etc/nginx/sites-available/default
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Expose Apache port
-USER root
+USER 10014
 EXPOSE 80
 
 # Start Apache
