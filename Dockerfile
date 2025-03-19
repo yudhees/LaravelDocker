@@ -36,7 +36,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 
 USER 10014
 COPY nginx.conf /etc/nginx/sites-available/default
-
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Expose Apache port
 EXPOSE 80
 
