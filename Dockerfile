@@ -13,9 +13,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN groupadd -g 10014 choreo && \
-    useradd --no-create-home --uid 10014 --gid 10014 --system choreouser && \
-    chown -R choreouser:choreo /home/choreouser
-
+    useradd --no-create-home --uid 10014 --gid 10014 --system choreouser 
 # Set Apache ServerName to avoid warnings
 # RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
     # && a2enconf servername
