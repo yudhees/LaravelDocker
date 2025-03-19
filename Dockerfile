@@ -1,5 +1,5 @@
 # Use PHP with Apache
-FROM php:8.2
+FROM php:8.2-fpm
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
@@ -35,8 +35,10 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 USER 10014
+COPY nginx.conf /etc/nginx/sites-available/default
+
 # Expose Apache port
 EXPOSE 80
 
 # Start Apache
-# CMD ["apache2-foreground"]
+CMD service php8.2-fpm start && nginx -g "daemon off;"
